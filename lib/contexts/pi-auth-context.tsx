@@ -1,8 +1,6 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
-// Ovdje koristimo tvoje konfiguracije
-import { PI_NETWORK_CONFIG, BACKEND_URLS } from "@/lib/system-config";
 import { api, setApiAuthToken } from "@/lib/api";
 
 export type LoginDTO = {
@@ -24,60 +22,56 @@ const PiAuthContext = createContext<PiAuthContextType | undefined>(undefined);
 
 export function PiAuthProvider({ children }: { children: ReactNode }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [authMessage, setAuthMessage] = useState("Initializing...");
+  const [authMessage, setAuthMessage] = useState("Pokretanje...");
   const [piAccessToken, setPiAccessToken] = useState<string | null>(null);
   const [userData, setUserData] = useState<LoginDTO | null>(null);
 
   const initializePiAndAuthenticate = async () => {
     try {
-      // 1. Provjera i učitavanje SDK-a
+      // 1. Čekanje na SDK
+      let checks = 0;
+      while (typeof window.Pi === "undefined" && checks < 5) {
+        setAuthMessage(`Čekam Pi SDK (${checks + 1}/5)...`);
+        await new Promise(r => setTimeout(r, 1000));
+        checks++;
+      }
+
       if (typeof window.Pi === "undefined") {
-         setAuthMessage("Waiting for Pi SDK...");
-         await new Promise(r => setTimeout(r, 1000));
-         if (typeof window.Pi === "undefined") {
-             // Ako nema Pi SDK, možda smo u običnom pregledniku?
-             console.warn("Pi SDK not found - are you in Pi Browser?");
-             // Nastavljamo dalje da se aplikacija ne sruši skroz
-         }
+        throw new Error("Pi SDK nije učitan. Provjeri internet ili otvori u Pi Browseru.");
       }
 
-      // Ako je Pi SDK tu, inicijaliziraj ga
-      if (typeof window.Pi !== "undefined") {
-          await window.Pi.init({ version: "2.0", sandbox: PI_NETWORK_CONFIG.SANDBOX });
-          
-          setAuthMessage("Authenticating with Pi...");
-          const piAuthResult = await window.Pi.authenticate(["username"]);
-          const token = piAuthResult.accessToken;
-          
-          setPiAccessToken(token);
-          setApiAuthToken(token);
+      // 2. Inicijalizacija
+      setAuthMessage("SDK učitan. Inicijalizacija...");
+      await window.Pi.init({ version: "2.0" });
 
-          // 2. Spajanje na naš Backend
-          setAuthMessage(`Contacting Server...`);
-          
-          try {
-            const loginRes = await api.post<LoginDTO>(BACKEND_URLS.LOGIN, {
-              pi_auth_token: token,
-            });
+      // 3. Autentifikacija s "osiguračem"
+      setAuthMessage("POPUŠTAJ BLOKADU: Provjeri iskače li prozor...");
+      
+      const piAuthResult = await window.Pi.authenticate(['username', 'payments'], {
+        onIncompletePaymentFound: (payment) => {
+          console.log("Pronađeno nedovršeno plaćanje", payment);
+        },
+      });
 
-            console.log("Backend success:", loginRes);
-            setUserData(loginRes.data);
-            setIsAuthenticated(true);
-            setAuthMessage("Login successful! ✅");
-            
-          } catch (backendError: any) {
-            console.error("Backend login failed:", backendError);
-            // OVO JE ONA PORUKA KOJU ČEKAMO:
-            throw new Error(`Server Error: ${backendError.message || "Unknown"}`);
-          }
-      } else {
-          setAuthMessage("Please open in Pi Browser app");
-      }
+      // Ako dođemo ovdje, prijava je uspjela!
+      const token = piAuthResult.accessToken;
+      setPiAccessToken(token);
+      setApiAuthToken(token);
+
+      setAuthMessage("Spajanje s bazom...");
+      
+      const loginRes = await api.post<LoginDTO>("/api/v1/pi", {
+        pi_auth_token: token,
+      });
+
+      setUserData(loginRes.data);
+      setIsAuthenticated(true);
+      setAuthMessage("Prijava uspješna! ✅");
 
     } catch (err: any) {
-      console.error("Auth flow failed:", err);
-      setAuthMessage(`ERROR: ${err.message}`);
-      setIsAuthenticated(false);
+      console.error("Auth Error:", err);
+      // Ako korisnik odbije ili SDK zapne
+      setAuthMessage(`GREŠKA: ${err.message || "Provjeri develop.pi postavke"}`);
     }
   };
 
@@ -86,7 +80,13 @@ export function PiAuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   return (
-    <PiAuthContext.Provider value={{ isAuthenticated, authMessage, piAccessToken, userData, reinitialize: initializePiAndAuthenticate }}>
+    <PiAuthContext.Provider value={{ 
+      isAuthenticated, 
+      authMessage, 
+      piAccessToken, 
+      userData, 
+      reinitialize: initializePiAndAuthenticate 
+    }}>
       {children}
     </PiAuthContext.Provider>
   );
@@ -94,6 +94,6 @@ export function PiAuthProvider({ children }: { children: ReactNode }) {
 
 export function usePiAuth() {
   const context = useContext(PiAuthContext);
-  if (context === undefined) throw new Error("usePiAuth must be used within PiAuthProvider");
+  if (context === undefined) throw new Error("usePiAuth error");
   return context;
 }

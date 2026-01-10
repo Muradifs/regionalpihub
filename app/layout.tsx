@@ -20,11 +20,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <Script 
-          src="https://sdk.minepi.com/pi-sdk.js" 
-          strategy="beforeInteractive" 
-        />
-      </head>
+  {/* Dodajemo 'crossOrigin' i mijenjamo strategiju učitavanja */}
+  <Script 
+    src="https://sdk.minepi.com/pi-sdk.js" 
+    strategy="afterInteractive"
+    crossOrigin="anonymous"
+  />
+</head>
       <body className={inter.className}>
         <PiAuthProvider>
           {children}
