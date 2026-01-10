@@ -1,6 +1,6 @@
 "use client";
 
-import { usePiAuth } from "@/contexts/pi-auth-context";
+import { usePiAuth } from "@/lib/contexts/pi-auth-context";
 import { useEffect, useState } from "react";
 
 export default function Home() {
