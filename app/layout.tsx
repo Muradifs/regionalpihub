@@ -1,18 +1,22 @@
-import { PiAuthProvider } from "@/contexts/pi-auth-context";import "./globals.css";
+import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import "./globals.css";
 import { PiAuthProvider } from "@/contexts/pi-auth-context";
 import Script from "next/script";
 import React from "react";
 
 const inter = Inter({ subsets: ["latin"] });
 
-export const metadata = {
+export const metadata: Metadata = {
   title: "Regional Pi Hub",
   description: "Community Hub for Pi Network",
 };
 
-// Koristimo "any" da ušutkamo TypeScript grešku za children
-export default function RootLayout({ children }: { children: any }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <html lang="en">
       <head>
