@@ -1,27 +1,27 @@
-@import "tailwindcss";
+/* SAFE MODE CSS - Samo da vidimo radi li aplikacija */
 
-/* Ovdje definiramo naše boje kao običan CSS (CSS Variables) */
-/* Ovo radi savršeno s v4 */
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
-/* Osnovni stilovi za tijelo stranice */
 body {
-  background-color: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: white !important;
+  color: black !important;
+  padding: 20px;
+  font-family: sans-serif;
 }
 
-/* Postavljamo boju rubova (border) ručno da izbjegnemo greške */
-* {
-  border-color: #e5e5e5;
+/* Stil za naš dijagnostički okvir */
+.debug-box {
+  background-color: #000000;
+  color: #00ff00;
+  padding: 10px;
+  border: 2px solid red;
+  margin-bottom: 20px;
+  font-family: monospace;
+}
+
+button {
+  border: 1px solid black;
+  padding: 15px;
+  margin: 10px;
+  background: #f0f0f0;
+  font-size: 16px;
+  cursor: pointer;
 }
