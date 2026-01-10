@@ -1,22 +1,17 @@
 import { NextResponse } from 'next/server';
 
 export async function POST(request: Request) {
-  const mockToken = "mock-access-token-12345";
-  
-  // Vraćamo sve moguće varijante imena, jedna će sigurno upaliti!
+  // Frontend nam šalje { pi_auth_token: "..." }
+  // Mi ćemo to ignorirati i samo vratiti potvrdu da je korisnik logiran.
+
+  // VRAĆAMO TOČNO ONO ŠTO "LoginDTO" TRAŽI:
   return NextResponse.json({
-    // Ako frontend traži 'token':
-    token: mockToken,
-    // Ako frontend traži 'accessToken':
-    accessToken: mockToken,
-    // Ako frontend traži 'access_token':
-    access_token: mockToken,
+    id: "test-user-uid-123",
+    username: "TestPioneer",
+    credits_balance: 100,    // Ovo je falilo!
+    terms_accepted: true,    // I ovo je falilo!
     
-    user: {
-      uid: "test-user-uid",
-      id: "test-user-uid", // Dodali smo i 'id' za svaki slučaj
-      username: "TestPioneer",
-      roles: ["user"]
-    }
+    // Dodat ćemo i ovo za svaki slučaj, da budemo sigurni
+    accessToken: "mock-access-token", 
   }, { status: 200 });
 }
