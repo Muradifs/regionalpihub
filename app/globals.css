@@ -16,9 +16,11 @@
 
 @layer base {
   * {
-    @apply border-gray-200;
+    /* Promijenjeno u neutral-200 da izbjegnemo grešku */
+    @apply border-neutral-200;
   }
   body {
-    @apply bg-white text-gray-900;
+    /* Promijenjeno u neutral-900 */
+    @apply bg-white text-neutral-900;
   }
 }
