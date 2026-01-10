@@ -1,4 +1,4 @@
-import "./globals.css";
+import { PiAuthProvider } from "@/contexts/pi-auth-context";import "./globals.css";
 import { Inter } from "next/font/google";
 import { PiAuthProvider } from "@/contexts/pi-auth-context";
 import Script from "next/script";
