@@ -1,22 +1,22 @@
-// LOCKED FILE
+// *** System Configuration ***
+// Adjusted for Vercel Deployment
 
-          // *** System Configuration - NON-EDITABLE VALUES ***
-          // This file contains configuration values that should not be modified during normal app customization.
-          // These values are set during app creation.
+// Pi Network Configuration
+export const PI_NETWORK_CONFIG = {
+  SDK_URL: "https://sdk.minepi.com/pi-sdk.js",
+  // Čitamo iz Vercel varijable (true/false)
+  SANDBOX: process.env.NEXT_PUBLIC_PI_SANDBOX_MODE === 'true',
+} as const;
 
-          // Pi Network Configuration
-          export const PI_NETWORK_CONFIG = {
-            SDK_URL: "https://sdk.minepi.com/pi-sdk.js",
-            SANDBOX: false,
-          } as const;
+// Backend Configuration
+export const BACKEND_CONFIG = {
+  // OVO JE BILO KRIVO! Sada čitamo tvoju pravu adresu.
+  // Ako varijabla fali, koristimo prazan string (lokalni API).
+  BASE_URL: process.env.NEXT_PUBLIC_API_BASE_URL || "",
+} as const;
 
-          // Backend Configuration
-          export const BACKEND_CONFIG = {
-            BASE_URL: "https://backend.appstudio-u7cm9zhmha0ruwv8.piappengine.com",
-          } as const;
-
-          // Backend URLs
-          export const BACKEND_URLS = {
-            LOGIN: `${BACKEND_CONFIG.BASE_URL}/v1/login`,
-
-          } as const;
+// Backend URLs
+export const BACKEND_URLS = {
+  // OVO JE BILO KRIVO! AI je tražio /v1/login, a mi smo napravili /api/v1/auth/pi
+  LOGIN: `/api/v1/auth/pi`, 
+} as const;
