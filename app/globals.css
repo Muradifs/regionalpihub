@@ -16,11 +16,12 @@
 
 @layer base {
   * {
-    /* Promijenjeno u neutral-200 da izbjegnemo grešku */
-    @apply border-neutral-200;
+    /* Umjesto @apply, koristimo čisti CSS */
+    border-color: #e5e5e5; 
   }
   body {
-    /* Promijenjeno u neutral-900 */
-    @apply bg-white text-neutral-900;
+    /* Čista bijela pozadina i tamna slova */
+    background-color: #ffffff;
+    color: #171717;
   }
 }
