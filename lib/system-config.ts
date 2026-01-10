@@ -1,7 +1,7 @@
 export const PI_NETWORK_CONFIG = {
   SDK_URL: "https://sdk.minepi.com/pi-sdk.js",
-  // OVO JE PROMJENA: Prisilno uključujemo Sandbox za testiranje
-  SANDBOX: true, 
+  // Promijeni na false da vidiš hoće li Pi Browser izbaciti popup
+  SANDBOX: false, 
 } as const;
 
 export const BACKEND_CONFIG = {
