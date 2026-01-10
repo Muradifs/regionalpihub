@@ -1,38 +1,31 @@
-import type React from "react"
-import type { Metadata } from "next"
-import { GeistSans } from "geist/font/sans"
-import { GeistMono } from "geist/font/mono"
-import { AppWrapper } from "@/components/app-wrapper"
-import { LocationProvider } from "@/contexts/location-context"
-import "./globals.css"
+import "./globals.css";
+import { Inter } from "next/font/google";
+import { PiAuthProvider } from "@/contexts/pi-auth-context";
+import Script from "next/script";
+import React from "react";
 
-export const metadata: Metadata = {
-  title: "Made with App Studio",
-  description: "Regional Pi Hub - Decentralized community platform for collaboration and knowledge sharing",
-    generator: 'v0.app'
-}
+const inter = Inter({ subsets: ["latin"] });
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode
-}>) {
+export const metadata = {
+  title: "Regional Pi Hub",
+  description: "Community Hub for Pi Network",
+};
+
+// Koristimo "any" da ušutkamo TypeScript grešku za children
+export default function RootLayout({ children }: { children: any }) {
   return (
     <html lang="en">
       <head>
-        <style>{`
-html {
-  font-family: ${GeistSans.style.fontFamily};
-  --font-sans: ${GeistSans.variable};
-  --font-mono: ${GeistMono.variable};
-}
-        `}</style>
+        <Script 
+          src="https://sdk.minepi.com/pi-sdk.js" 
+          strategy="beforeInteractive" 
+        />
       </head>
-      <body>
-        <LocationProvider>
-          <AppWrapper>{children}</AppWrapper>
-        </LocationProvider>
+      <body className={inter.className}>
+        <PiAuthProvider>
+          {children}
+        </PiAuthProvider>
       </body>
     </html>
-  )
+  );
 }
