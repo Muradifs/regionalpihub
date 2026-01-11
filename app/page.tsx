@@ -131,16 +131,4 @@ export default function App() {
         <NavButton active={activeTab === 'home'} icon={Users} label={t("home")} onClick={() => setActiveTab('home')} />
         <NavButton active={activeTab === 'forum'} icon={MessageSquare} label={t("forum")} onClick={() => setActiveTab('forum')} />
         <div className="relative -mt-16"><button className="bg-indigo-600 p-5 rounded-full text-white shadow-xl hover:scale-110 active:scale-95 transition-all"><Plus className="w-7 h-7" /></button></div>
-        <NavButton active={activeTab === 'proposals'} icon={Vote} label={t("proposals")} onClick={() => setActiveTab('proposals')} />
-        <NavButton active={activeTab === 'events'} icon={Calendar} label={t("events")} onClick={() => setActiveTab('events')} />
-      </nav>
-    </div>
-  );
-}
-
-const NavButton = ({ active, icon: Icon, label, onClick }: any) => (
-  <button onClick={onClick} className={`flex flex-col items-center gap-1.5 transition-all ${active ? 'text-indigo-600 scale-110' : 'text-slate-400'}`}>
-    <Icon className={`w-6 h-6 ${active ? 'fill-indigo-600/10' : ''}`} />
-    <span className="text-[8px] font-black uppercase tracking-widest">{label}</span>
-  </button>
-);
+        <Nav
