@@ -22,46 +22,28 @@ const PiAuthContext = createContext<PiAuthContextType | undefined>(undefined);
 
 export function PiAuthProvider({ children }: { children: ReactNode }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [authMessage, setAuthMessage] = useState("Pokretanje...");
+  const [authMessage, setAuthMessage] = useState("Inicijalizacija...");
   const [piAccessToken, setPiAccessToken] = useState<string | null>(null);
   const [userData, setUserData] = useState<LoginDTO | null>(null);
 
   const initializePiAndAuthenticate = async () => {
     try {
-      // 1. Čekanje na SDK
-      let checks = 0;
-      while (typeof window.Pi === "undefined" && checks < 5) {
-        setAuthMessage(`Čekam Pi SDK (${checks + 1}/5)...`);
-        await new Promise(r => setTimeout(r, 1000));
-        checks++;
-      }
-
       if (typeof window.Pi === "undefined") {
-        throw new Error("Pi SDK nije učitan. Provjeri internet ili otvori u Pi Browseru.");
+        setAuthMessage("Čekam Pi SDK...");
+        await new Promise(r => setTimeout(r, 2000));
+        if (typeof window.Pi === "undefined") throw new Error("SDK nije učitan");
       }
 
-      // 2. Inicijalizacija
-      setAuthMessage("SDK učitan. Inicijalizacija...");
       await window.Pi.init({ version: "2.0" });
-
-      // 3. Autentifikacija s "osiguračem"
       setAuthMessage("POPUŠTAJ BLOKADU: Provjeri iskače li prozor...");
       
-      // 3. Autentifikacija s "osiguračem"
-      setAuthMessage("POPUŠTAJ BLOKADU: Provjeri iskače li prozor...");
-      
-      // @ts-ignore - Ignoriraj TS grešku jer Pi SDK prima dva argumenta
+      // @ts-ignore
       const piAuthResult = await window.Pi.authenticate(['username', 'payments'], {
         onIncompletePaymentFound: (payment: any) => {
-          console.log("Pronađeno nedovršeno plaćanje", payment);
-        },
-      });const piAuthResult = await window.Pi.authenticate(['username', 'payments'], {
-        onIncompletePaymentFound: (payment) => {
-          console.log("Pronađeno nedovršeno plaćanje", payment);
+          console.log("Nedovršeno plaćanje", payment);
         },
       });
 
-      // Ako dođemo ovdje, prijava je uspjela!
       const token = piAuthResult.accessToken;
       setPiAccessToken(token);
       setApiAuthToken(token);
@@ -78,8 +60,7 @@ export function PiAuthProvider({ children }: { children: ReactNode }) {
 
     } catch (err: any) {
       console.error("Auth Error:", err);
-      // Ako korisnik odbije ili SDK zapne
-      setAuthMessage(`GREŠKA: ${err.message || "Provjeri develop.pi postavke"}`);
+      setAuthMessage(`GREŠKA: ${err.message || "Provjeri develop.pi"}`);
     }
   };
 
