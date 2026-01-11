@@ -1,27 +1,26 @@
 import { NextRequest, NextResponse } from "next/server";
+import dbConnect from "@/lib/mongodb";
+import User from "@/models/User";
 
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json();
-    const { pi_auth_token } = body;
+    await dbConnect(); // Spajanje na MongoDB
+    const { pi_auth_token } = await req.json();
 
-    if (!pi_auth_token) {
-      return NextResponse.json({ error: "Token is missing" }, { status: 400 });
+    // Ovdje bi inače išla verifikacija tokena preko Pi Network API-ja
+    // Za sada simuliramo dohvat korisnika iz tvoje baze
+    let user = await User.findOne({ username: "Korisnik" }); 
+
+    if (!user) {
+      user = await User.create({
+        username: "Novi Korisnik",
+        pi_id: "neki-id",
+        credits_balance: 10
+      });
     }
 
-    // PRIVREMENI POPRAVAK: 
-    // Umjesto da čekamo bazu koja možda šteka, vratit ćemo uspjeh 
-    // da vidimo hoće li tvoja aplikacija "prodisati".
-    
-    return NextResponse.json({
-      id: "test-id",
-      username: "Pi Korisnik",
-      credits_balance: 100,
-      terms_accepted: true
-    }, { status: 200 });
-
+    return NextResponse.json(user, { status: 200 });
   } catch (error: any) {
-    console.error("Backend error:", error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
