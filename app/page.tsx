@@ -88,5 +88,59 @@ export default function App() {
             </div>
 
             <div className="grid grid-cols-2 gap-4">
-              <Card className="p-6"><Users className="w-4 h-4 text-indigo-600 mb-3" /><p className="text-xl font-black">@{auth.userData?.username || "muradifs"}</p><span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">{t("profile")}</span></Card>
-              <Card className="p-6"><TrendingUp className="w-4 h-4 text-emerald-600 mb-3" /><p className="text-xl font-black">{auth.userData?.credits_balance || 0} π</p><span className="text
+              <Card className="p-6">
+                <Users className="w-4 h-4 text-indigo-600 mb-3" />
+                <p className="text-xl font-black">
+                   @{auth.userData?.username || "muradifs"}
+                </p>
+                <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">
+                   {t("profile")}
+                </span>
+              </Card>
+
+              <Card className="p-6">
+                <TrendingUp className="w-4 h-4 text-emerald-600 mb-3" />
+                <p className="text-xl font-black">
+                   {auth.userData?.credits_balance || 0} Pi
+                </p>
+                <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">
+                   Balance
+                </span>
+              </Card>
+            </div>
+
+            <section>
+              <h2 className="text-xl font-black mb-5 tracking-tight">{t("activeProposals")}</h2>
+              <div className="space-y-4">
+                {[{ id: 1, title: "Regional Hub Balkans", votes: 1420 }, { id: 2, title: "Merchant Program BiH", votes: 890 }].map(p => (
+                  <Card key={p.id} onClick={() => setSelectedProposal(p)} className="p-5 border-l-4 border-l-indigo-600 flex justify-between items-center group">
+                    <div className="flex-1">
+                      <h3 className="font-black text-sm">{p.title}</h3>
+                      <p className="text-[10px] font-bold text-slate-400 mt-1 uppercase">{p.votes} {t("votes")}</p>
+                    </div>
+                    <Button variant="outline" className="text-[10px] h-8 px-4">{t("vote")}</Button>
+                  </Card>
+                ))}
+              </div>
+            </section>
+          </div>
+        )}
+      </main>
+
+      <nav className="fixed bottom-6 left-6 right-6 max-w-lg mx-auto bg-white/90 dark:bg-slate-900/90 backdrop-blur-2xl border border-slate-200 dark:border-slate-800 rounded-[2.5rem] px-8 py-4 flex items-center justify-between z-50 shadow-2xl">
+        <NavButton active={activeTab === 'home'} icon={Users} label={t("home")} onClick={() => setActiveTab('home')} />
+        <NavButton active={activeTab === 'forum'} icon={MessageSquare} label={t("forum")} onClick={() => setActiveTab('forum')} />
+        <div className="relative -mt-16"><button className="bg-indigo-600 p-5 rounded-full text-white shadow-xl hover:scale-110 active:scale-95 transition-all"><Plus className="w-7 h-7" /></button></div>
+        <NavButton active={activeTab === 'proposals'} icon={Vote} label={t("proposals")} onClick={() => setActiveTab('proposals')} />
+        <NavButton active={activeTab === 'events'} icon={Calendar} label={t("events")} onClick={() => setActiveTab('events')} />
+      </nav>
+    </div>
+  );
+}
+
+const NavButton = ({ active, icon: Icon, label, onClick }: any) => (
+  <button onClick={onClick} className={`flex flex-col items-center gap-1.5 transition-all ${active ? 'text-indigo-600 scale-110' : 'text-slate-400'}`}>
+    <Icon className={`w-6 h-6 ${active ? 'fill-indigo-600/10' : ''}`} />
+    <span className="text-[8px] font-black uppercase tracking-widest">{label}</span>
+  </button>
+);
