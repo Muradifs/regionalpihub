@@ -59,12 +59,17 @@ export default function App() {
   // 1. Provjera prijave
   if (!auth.isAuthenticated) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen p-6 bg-slate-50 text-center">
-        <h1 className="text-3xl font-black text-indigo-700 mb-4 tracking-tighter uppercase">Regional Hub</h1>
-        <div className="bg-black text-green-400 p-4 rounded-2xl mb-8 font-mono text-[10px] w-full max-w-xs shadow-2xl">
-          STATUS: {auth.authMessage}
-        </div>
-        <button 
+      <div className="flex flex-col items-center">
+  <p className="text-slate-500 mb-4 text-sm font-bold uppercase tracking-widest">
+     Klikni gumb ispod za pristup:
+  </p>
+  <button 
+    onClick={() => auth.reinitialize()}
+    className="bg-[#8A2BE2] hover:bg-[#7B1FA2] text-white px-12 py-5 rounded-2xl font-black shadow-2xl shadow-purple-200 active:scale-95 transition-all animate-bounce"
+  >
+    🔑 PRIJAVI SE (PI BROWSER)
+  </button>
+</div>
   onClick={async () => {
     console.log("Pokrećem prijavu...");
     await auth.reinitialize();
