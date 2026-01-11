@@ -4,42 +4,32 @@ import User from "@/models/User";
 
 export async function POST(req: NextRequest) {
   try {
-    // 1. Pokušaj se spojiti na bazu, ali postavi timeout od 5 sekundi
-    try {
-      await dbConnect();
-    } catch (dbErr) {
-      console.error("Baza nije dostupna, nastavljam u 'offline' modu", dbErr);
-    }
-
+    await dbConnect();
     const { pi_auth_token } = await req.json();
 
     if (!pi_auth_token) {
-      return NextResponse.json({ error: "No token" }, { status: 400 });
+      return NextResponse.json({ error: "Token missing" }, { status: 400 });
     }
 
-    // 2. Pokušaj naći korisnika u bazi
-    let user = null;
-    try {
-      user = await User.findOne({ username: "Korisnik" });
-    } catch (findErr) {
-      console.error("Greška pri traženju korisnika", findErr);
-    }
+    // Ovdje u pravoj aplikaciji šaljemo upit Pi Network API-ju da potvrdi token.
+    // Za sada, budući da si u Pi Browseru, tvoj frontend šalje token.
+    // Simulirat ćemo vađenje username-a dok ne podesimo punu API verifikaciju:
+    
+    // Potraži korisnika, ako ne postoji - kreiraj ga sa tvojim podacima
+    let user = await User.findOne({ pi_id: "muradif-unique-id" }); 
 
-    // 3. Ako baza ne radi ili korisnik ne postoji, vrati "Fantomskog" korisnika
-    // tako da aplikacija NE ZAPNE u krugu.
     if (!user) {
-      return NextResponse.json({
-        id: "temp-id",
-        username: "Pi Korisnik (Local)",
-        credits_balance: 0,
-        terms_accepted: true
-      }, { status: 200 });
+      user = await User.create({
+        username: "muradifs", // TVOJE IME
+        pi_id: "muradif-unique-id",
+        credits_balance: 100 // Poklon dobrodošlice
+      });
     }
 
     return NextResponse.json(user, { status: 200 });
-
   } catch (error: any) {
-    console.error("Glavna greška backenda:", error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    console.error("Database error:", error);
+    // Vrati grešku umjesto (Local) da znamo što ne valja s bazom
+    return NextResponse.json({ error: "Baza nije dostupna" }, { status: 500 });
   }
 }
