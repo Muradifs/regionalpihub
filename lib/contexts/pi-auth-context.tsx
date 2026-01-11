@@ -28,62 +28,42 @@ export function PiAuthProvider({ children }: { children: ReactNode }) {
 
   const initializePiAndAuthenticate = async () => {
     try {
+      setAuthMessage("Provjera Pi SDK...");
+      
       if (typeof window.Pi === "undefined") {
-        setAuthMessage("Čekam Pi SDK...");
-        await new Promise(r => setTimeout(r, 2000));
-        if (typeof window.Pi === "undefined") throw new Error("SDK nije učitan");
+        await new Promise(r => setTimeout(r, 1500));
       }
 
-      await window.Pi.init({ version: "2.0" });
-      setAuthMessage("POPUŠTAJ BLOKADU: Provjeri iskače li prozor...");
-      
-      // @ts-ignore
-      const initializePiAndAuthenticate = async () => {
-        try {
-          setAuthMessage("Inicijalizacija Pi SDK...");
-          
-          if (typeof window.Pi === "undefined") {
-            await new Promise(r => setTimeout(r, 1500));
-          }
-    
-          await window.Pi.init({ version: "2.0" });
-          
-          // Dodajemo mali delay prije same prijave da izbjegnemo bijeli ekran
-          await new Promise(r => setTimeout(r, 1000));
-          
-          setAuthMessage("Otvaram prozor za prijavu...");
-          
-          // @ts-ignore
-          const piAuthResult = await window.Pi.authenticate(['username', 'payments'], {
-            onIncompletePaymentFound: (payment: any) => console.log(payment),
-          });
-    
-          const token = piAuthResult.accessToken;
-          setPiAccessToken(token);
-          setApiAuthToken(token);
-    
-          setAuthMessage("Provjera korisnika...");
-          const loginRes = await api.post("/api/v1/pi", { pi_auth_token: token });
-    
-          setUserData(loginRes.data);
-          setIsAuthenticated(true);
-          setAuthMessage("Uspješno! ✅");
-    
-        } catch (err: any) {
-          setAuthMessage(`Čekam na akciju korisnika...`);
-          console.error(err);
-        }
-      };
-        pi_auth_token: token,
-      });
+      if (typeof window.Pi !== "undefined") {
+        await window.Pi.init({ version: "2.0" });
+        
+        setAuthMessage("Otvaram prozor za prijavu...");
+        
+        // @ts-ignore
+        const piAuthResult = await window.Pi.authenticate(['username', 'payments'], {
+          onIncompletePaymentFound: (payment: any) => console.log(payment),
+        });
 
-      setUserData(loginRes.data);
-      setIsAuthenticated(true);
-      setAuthMessage("Prijava uspješna! ✅");
+        const token = piAuthResult.accessToken;
+        setPiAccessToken(token);
+        setApiAuthToken(token);
+
+        setAuthMessage("Provjera korisnika na serveru...");
+        
+        const loginRes = await api.post<LoginDTO>("/api/v1/pi", { 
+          pi_auth_token: token 
+        });
+
+        setUserData(loginRes.data);
+        setIsAuthenticated(true);
+        setAuthMessage("Prijava uspješna! ✅");
+      } else {
+        setAuthMessage("Pi SDK nije dostupan. Otvorite u Pi Browseru.");
+      }
 
     } catch (err: any) {
-      console.error("Auth Error:", err);
-      setAuthMessage(`GREŠKA: ${err.message || "Provjeri develop.pi"}`);
+      console.error(err);
+      setAuthMessage("Kliknite ljubičasti gumb za prijavu.");
     }
   };
 
