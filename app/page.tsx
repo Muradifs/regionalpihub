@@ -65,11 +65,14 @@ export default function App() {
           STATUS: {auth.authMessage}
         </div>
         <button 
-          onClick={() => auth.reinitialize()}
-          className="bg-indigo-600 text-white px-10 py-4 rounded-2xl font-black shadow-xl active:scale-95 transition-all"
-        >
-          PRIJAVI SE (PI BROWSER)
-        </button>
+  onClick={async () => {
+    console.log("Pokrećem prijavu...");
+    await auth.reinitialize();
+  }}
+  className="bg-indigo-600 text-white px-10 py-4 rounded-2xl font-black shadow-xl active:scale-95 transition-all"
+>
+  PRIJAVI SE (PI BROWSER)
+</button>
       </div>
     );
   }
