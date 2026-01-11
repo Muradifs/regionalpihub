@@ -47,7 +47,15 @@ export function PiAuthProvider({ children }: { children: ReactNode }) {
       // 3. Autentifikacija s "osiguračem"
       setAuthMessage("POPUŠTAJ BLOKADU: Provjeri iskače li prozor...");
       
+      // 3. Autentifikacija s "osiguračem"
+      setAuthMessage("POPUŠTAJ BLOKADU: Provjeri iskače li prozor...");
+      
+      // @ts-ignore - Ignoriraj TS grešku jer Pi SDK prima dva argumenta
       const piAuthResult = await window.Pi.authenticate(['username', 'payments'], {
+        onIncompletePaymentFound: (payment: any) => {
+          console.log("Pronađeno nedovršeno plaćanje", payment);
+        },
+      });const piAuthResult = await window.Pi.authenticate(['username', 'payments'], {
         onIncompletePaymentFound: (payment) => {
           console.log("Pronađeno nedovršeno plaćanje", payment);
         },
