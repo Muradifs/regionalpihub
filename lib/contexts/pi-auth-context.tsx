@@ -38,19 +38,42 @@ export function PiAuthProvider({ children }: { children: ReactNode }) {
       setAuthMessage("POPUŠTAJ BLOKADU: Provjeri iskače li prozor...");
       
       // @ts-ignore
-      const piAuthResult = await window.Pi.authenticate(['username', 'payments'], {
-        onIncompletePaymentFound: (payment: any) => {
-          console.log("Nedovršeno plaćanje", payment);
-        },
-      });
-
-      const token = piAuthResult.accessToken;
-      setPiAccessToken(token);
-      setApiAuthToken(token);
-
-      setAuthMessage("Spajanje s bazom...");
-      
-      const loginRes = await api.post<LoginDTO>("/api/v1/pi", {
+      const initializePiAndAuthenticate = async () => {
+        try {
+          setAuthMessage("Inicijalizacija Pi SDK...");
+          
+          if (typeof window.Pi === "undefined") {
+            await new Promise(r => setTimeout(r, 1500));
+          }
+    
+          await window.Pi.init({ version: "2.0" });
+          
+          // Dodajemo mali delay prije same prijave da izbjegnemo bijeli ekran
+          await new Promise(r => setTimeout(r, 1000));
+          
+          setAuthMessage("Otvaram prozor za prijavu...");
+          
+          // @ts-ignore
+          const piAuthResult = await window.Pi.authenticate(['username', 'payments'], {
+            onIncompletePaymentFound: (payment: any) => console.log(payment),
+          });
+    
+          const token = piAuthResult.accessToken;
+          setPiAccessToken(token);
+          setApiAuthToken(token);
+    
+          setAuthMessage("Provjera korisnika...");
+          const loginRes = await api.post("/api/v1/pi", { pi_auth_token: token });
+    
+          setUserData(loginRes.data);
+          setIsAuthenticated(true);
+          setAuthMessage("Uspješno! ✅");
+    
+        } catch (err: any) {
+          setAuthMessage(`Čekam na akciju korisnika...`);
+          console.error(err);
+        }
+      };
         pi_auth_token: token,
       });
 
