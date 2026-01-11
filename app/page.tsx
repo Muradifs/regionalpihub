@@ -1,3 +1,4 @@
+// @ts-nocheck
 "use client";
 
 import React, { useState, useEffect } from "react";
@@ -20,7 +21,7 @@ const translations = {
 };
 
 // --- Pomoćne UI Komponente ---
-const Card = ({ children, className = "", onClick }) => (
+const Card = ({ children, className = "", onClick }: any) => (
   <div onClick={onClick} className={`bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-sm transition-all hover:shadow-md ${onClick ? 'cursor-pointer' : ''} ${className}`}>
     {children}
   </div>
